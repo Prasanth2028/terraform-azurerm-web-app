@@ -396,30 +396,3 @@ resource "azurerm_app_service_certificate_binding" "this" {
   certificate_id      = azurerm_app_service_managed_certificate.this[each.key].id
   ssl_state           = each.value["ssl_state"]
 }
-
-resource "azurerm_monitor_diagnostic_setting" "this" {
-  name                       = var.diagnostic_setting_name
-  target_resource_id         = local.web_app.id
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-
-  # Ref: https://registry.terraform.io/providers/hashicorp/azurerm/3.65.0/docs/resources/monitor_diagnostic_setting#log_analytics_destination_type
-  log_analytics_destination_type = null
-
-  dynamic "enabled_log" {
-    for_each = toset(var.diagnostic_setting_enabled_log_categories)
-
-    content {
-      category = enabled_log.value
-    }
-  }
-
-  dynamic "metric" {
-    for_each = toset(concat(local.diagnostic_setting_metric_categories, var.diagnostic_setting_enabled_metric_categories))
-
-    content {
-      # Azure expects explicit configuration of both enabled and disabled metric categories.
-      category = metric.value
-      enabled  = contains(var.diagnostic_setting_enabled_metric_categories, metric.value)
-    }
-  }
-}

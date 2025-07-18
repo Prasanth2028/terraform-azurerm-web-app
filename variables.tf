@@ -292,6 +292,7 @@ variable "identity_ids" {
 variable "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics workspace to send diagnostics to."
   type        = string
+  default     = null
 }
 
 variable "diagnostic_setting_enabled_log_categories" {
@@ -323,12 +324,6 @@ variable "diagnostic_setting_name" {
 variable "tags" {
   description = "A map of tags to assign to the resources."
   type        = map(string)
-  default     = {}
-
-  validation {
-    condition     = length(setintersection(["hidden-link: /app-insights-conn-string", "hidden-link: /app-insights-instrumentation-key", "hidden-link: /app-insights-resource-id"], keys(var.tags))) == 0
-    error_message = "Hidden tags (\"hidden-link: *\") are managed by Azure."
-  }
 }
 
 variable "storage_accounts" {
